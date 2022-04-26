@@ -3,14 +3,21 @@ const fs = require(`fs`);
 const inquirer = require(`inquirer`);
 const path = require(`path`);
 const { exit } = require("process");
+const Manager = require('./lib/manager');
+const Engineer = require('./lib/engineer');
+const Intern = require('./lib/intern');
+let gatheredData = [];
+
 // const generateMarkdown = require(`./utils/generateMarkdown`);
 
 // An array of questions for user input
-const employeeQuestions = [{
+const roleQuestion = [{
     name: `role`, type: `list`,
     message: `I would like to add a...`,
     choices: [`Manager`, `Engineer`, `Intern`, `None, I'm finished`],
-    },{
+}]
+
+const employeeQuestions = [{
     name: `employeeName`, type: `input`,
     message: `What is their name?`,
     },{
@@ -19,14 +26,6 @@ const employeeQuestions = [{
     },{
     name: `email`, type: `input`,
     message: `What is their email?`,
-    },{
-    name: `officeNumber`, type: `input`,
-    message: `What is their officeNumber?`,
-    when: (answers) => {
-        if (answers.role === `Manager`) {
-            return true;
-        };
-    }
     },{
     name: `github`, type: `input`,
     message: `What is their gitHub username?`,
@@ -56,12 +55,20 @@ const employeeQuestions = [{
 
 function addEmployee() {
   inquirer
-    .prompt(employeeQuestions)
+    .prompt(roleQuestion)
     .then((answers) => {
-        console.log(answers)
+        if (answers.role === `None, I'm finished`) {
+            buildPage();
+        };
+        gatherInfo(answers);
     })
     .catch((e) => {if (e) throw e;});
-}
+};
+
+function gatherInfo(role) {
+    console.log(role)
+    addEmployee()
+};
 
 // Function call to initialize app
 addEmployee();
