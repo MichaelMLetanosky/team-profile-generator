@@ -3,6 +3,7 @@ const fs = require(`fs`);
 const inquirer = require(`inquirer`);
 const path = require(`path`);
 const { exit } = require("process");
+const gm = require(`./lib/generateMarkdown`);
 // const Manager = require('./lib/manager');
 // const Engineer = require('./lib/engineer');
 // const Intern = require('./lib/intern');
@@ -54,6 +55,8 @@ const employeeQuestions = [{
 
 // Initial function that starts gathering info about the project manager
 function init() {
+    //reset gatheredData
+    gatheredData = [];
     console.log(`Let's start with a manager!`)
     // Sets the first input team members role to be the only Manager
     gatherData({ role: 'Manager' })
@@ -66,7 +69,6 @@ function gatherData(role) {
     .then((answers) =>{
         // Gets an object for the employee and adds to an array
         gatheredData = gatheredData.concat([answers]);
-        console.log(gatheredData)
         addEmployee();
     })
     .catch((e) => {if (e) throw e;});
@@ -79,7 +81,8 @@ function addEmployee() {
     .prompt(roleQuestion)
     .then((answers) => {
         if (answers.role === `No, I'm finished`) {
-            buildPage(gatheredData);
+            buildPage(`index.html`, gatheredData);
+            return;
         };
         gatherData(answers);
     })
@@ -87,15 +90,15 @@ function addEmployee() {
 };
 
 
-// // TODO: Create a function to write README file
-// function writeToFile(fileName, data) {
-//     fs.writeFile(`./output/${fileName}`, generateMarkdown(data), (e) => e ? console.log(e) : console.log(`Success! File is in Output Folder`))
+// // TODO: Create a function to write index.html
+function buildPage(fileName, data) {
+    fs.writeFile(`./dist/${fileName}`, gm.generateMarkdown(data), (e) => e ? console.log(e) : console.log(`Success! File is in Output Folder`))
+}
+
+// function generateMarkdown (data) {
+//     console.log(data);
 // }
 
-
 // TODO: Create a function to initialize app
-// Starts the inquirer to prompt answers to feed to the writeToFile function
-
-
 // Function call to initialize app
 init();
